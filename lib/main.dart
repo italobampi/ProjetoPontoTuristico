@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:projetopontoturistico/pages/filtro_page.dart';
 import 'package:projetopontoturistico/pages/lista_pontos_page.dart';
+import 'package:projetopontoturistico/pages/teste_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,6 +50,10 @@ class _MyHomePageState extends State<MyHomePage> {
         primarySwatch: Colors.blue,
       ),
       home: ListaPontosPage(),
+      routes: {
+        FiltroPage.ROUTE_NAME: (BuildContext context) => FiltroPage(),
+
+      },
     );
   }
 }
