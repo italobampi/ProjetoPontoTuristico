@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/pages/filtro_page.dart';
 import 'package:projetopontoturistico/pages/lista_pontos_page.dart';
-import 'package:projetopontoturistico/pages/teste_page.dart';
+import 'package:projetopontoturistico/pages/detalhe_page.dart';
 
 void main() {
   runApp(const MyApp());

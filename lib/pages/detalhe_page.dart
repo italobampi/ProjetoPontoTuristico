@@ -4,22 +4,21 @@ import 'package:projetopontoturistico/model/ponto.dart';
 import '../cadastro_form_dialog.dart';
 
 
-class TestePage extends StatefulWidget{
+class DetalhePage extends StatefulWidget{
   static const ROUTE_NAME ='/teste';
   List<Ponto> pontos = <Ponto>[];
   int index;
 
-  TestePage({  Key? key, required this.pontos, required this.index}): super(key: key) ;
+  DetalhePage({  Key? key, required this.pontos, required this.index}): super(key: key) ;
 
-  _TestePageState createState() => _TestePageState();
+  _DetalhePageState createState() => _DetalhePageState();
 }
 final double padding = 25;
 final double spacing = 18;
 final sidePadding = EdgeInsets.symmetric(horizontal: padding);
 
-class _TestePageState extends State<TestePage>{
-  static const ACAO_EDITAR = 'editar';
-  static const ACAO_EXCLUIR = 'excluir';
+class _DetalhePageState extends State<DetalhePage>{
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -31,24 +30,7 @@ class _TestePageState extends State<TestePage>{
     Ponto pontoAtual;
     return Scaffold(
       body: criarBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()=>{
-         pontoAtual = widget.pontos[widget.index],
-        PopupMenuButton<String>(
 
-        itemBuilder: (BuildContext context) => criarItensMenuPopup(),
-        onSelected: (String valorSelecionado){
-        if (valorSelecionado == ACAO_EDITAR){
-        _abrirForm(pontoAtual: pontoAtual,indice: widget.index);
-        }else{
-        _excluir(widget.index);
-        }
-        },
-        ),
-        },
-        tooltip: 'Opiçoes',
-        child: Icon(Icons.data_saver_on),
-      ),
     );
   }
 
@@ -183,109 +165,15 @@ class _TestePageState extends State<TestePage>{
       ),
     );
   }
-  List<PopupMenuEntry<String>> criarItensMenuPopup(){
-    return[
-      PopupMenuItem<String>(
-        value: ACAO_EDITAR,
-        child: Row(
-          children: const [
-            Icon(Icons.edit, color: Colors.black),
-            Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text('Editar'),
-            ),
-          ],
-        ),
-      ),
-      PopupMenuItem<String>(
-        value: ACAO_EXCLUIR,
-        child: Row(
-          children: const [
-            Icon(Icons.delete, color: Colors.red),
-            Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text('Excluir'),
-            ),
-          ],
-        ),
-
-      ),
-    ];
-  }
 
 
 
 
 
-  void _abrirForm( {Ponto? pontoAtual, int? indice} ){
-    List<Ponto> pontos = widget.pontos;
-    final key = GlobalKey<CadastroFormDialogState>();
-    showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return AlertDialog(
-            title: Text(pontoAtual == null ? 'Novo Ponto': 'Alterar Ponto ${pontoAtual.id}'),
-            content: CadastroFormDialog(key: key, pontoAtual: pontoAtual,),
-            actions: [
-              TextButton(
-                  child: const Text('Cancelar'),
-                  onPressed: () => Navigator.of(context).pop()),
-              TextButton(
-                child: const Text('Salvar'),
-                onPressed: (){
-                  if (key.currentState != null  && key.currentState!.dadosValidos()){
-                    setState(() {
-                      final novoPonto = key.currentState!.novoPonto;
-
-                        pontos[widget.index] = novoPonto;
-
-                    });
-                    Navigator.of(context).pop();
-                  }
-                },
-              )
-
-            ],
-          );
-        }
-    );
-  }
 
 
 
-  void _excluir(int indice){
-    showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return AlertDialog(
-            title: Row(
-              children: const [
-                Icon(Icons.warning, color: Colors.red),
-                Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text('Atenção'),
-                ),
-              ],
-            ),
-            content: Text('Esse registro será removido definitivamente'),
-            actions: [
-              TextButton(
-                child: Text('Cancelar'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              TextButton(
-                child: Text('OK'),
-                onPressed: (){
-                  Navigator.of(context).pop();
-                  setState(() {
-                    widget.pontos.removeAt(indice);
-                  });
 
-                },
-              )
-            ],
-          );
-        }
-    );
-  }
+
+
 }

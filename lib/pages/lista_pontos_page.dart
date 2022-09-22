@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/cadastro_form_dialog.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
-import 'package:projetopontoturistico/pages/teste_page.dart';
+import 'package:projetopontoturistico/pages/detalhe_page.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'filtro_page.dart';
@@ -13,6 +13,8 @@ class ListaPontosPage extends StatefulWidget{
 
 class _ListaPontosPageState extends State<ListaPontosPage>{
   var _ultimoId = 0;
+  static const ACAO_EDITAR = 'editar';
+  static const ACAO_EXCLUIR = 'excluir';
   final _pontos = <Ponto>[
     Ponto(id: 1, nome: 'jojo', descricao: 'descricao',diferencial: 'tyftrd', data: DateTime.now()),
     Ponto(id: 1, nome: 'jojo', descricao: 'descricao',diferencial: 'tyftrd', data: DateTime.now().add(Duration(days: 1))),
@@ -58,17 +60,30 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
       itemCount: _pontos.length,
       itemBuilder: (BuildContext context, int index){
         final ponto = _pontos[index];
-        return ListTile(
-          title: Text('${ponto.nome}'),
-          subtitle: Text('${ponto.descricao}'),
-          onTap: () {
-            showCupertinoModalBottomSheet(
-              context: context,
-              builder: (context) => TestePage(pontos: _pontos,index: index,),
-            );
-          },
+        return PopupMenuButton<String>(
+          child:  ListTile(
+        title: Text('${ponto.nome}'),
+        subtitle: Text('${ponto.descricao}'),
+        onLongPress: () {
+        showCupertinoModalBottomSheet(
+        context: context,
+        builder: (context) => DetalhePage(pontos: _pontos,index: index,),
 
         );
+        },
+        
+
+        ),
+          itemBuilder: (BuildContext context) => criarItensMenuPopup(),
+          onSelected: (String valorSelecionado){
+            if (valorSelecionado == ACAO_EDITAR){
+              _abrirForm(pontoAtual: ponto,indice: index);
+            }else{
+              _excluir(index);
+            }
+          },
+        );
+
       }, separatorBuilder: (BuildContext context, int index) => Divider() ,
     );
   }
@@ -112,6 +127,72 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
                 },
               )
 
+            ],
+          );
+        }
+    );
+  }
+
+  List<PopupMenuEntry<String>> criarItensMenuPopup(){
+    return[
+      PopupMenuItem<String>(
+        value: ACAO_EDITAR,
+        child: Row(
+          children: const [
+            Icon(Icons.edit, color: Colors.black),
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text('Editar'),
+            ),
+          ],
+        ),
+      ),
+      PopupMenuItem<String>(
+        value: ACAO_EXCLUIR,
+        child: Row(
+          children: const [
+            Icon(Icons.delete, color: Colors.red),
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text('Excluir'),
+            ),
+          ],
+        ),
+
+      ),
+    ];
+  }
+
+  void _excluir(int indice){
+    showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Row(
+              children: const [
+                Icon(Icons.warning, color: Colors.red),
+                Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text('Atenção'),
+                ),
+              ],
+            ),
+            content: Text('Esse registro será removido definitivamente'),
+            actions: [
+              TextButton(
+                child: Text('Cancelar'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              TextButton(
+                child: Text('OK'),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  setState(() {
+                    _pontos.removeAt(indice);
+                  });
+
+                },
+              )
             ],
           );
         }
