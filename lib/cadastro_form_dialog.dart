@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
 
 class CadastroFormDialog extends StatefulWidget{
   final Ponto? pontoAtual;
 
-  CadastroFormDialog( {Key? key, this.pontoAtual}) : super(key: key);
+  const CadastroFormDialog( {Key? key, this.pontoAtual}) : super(key: key);
 
+  @override
   CadastroFormDialogState createState() => CadastroFormDialogState();
 }
 
@@ -18,6 +18,7 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
   final _diferencialController = TextEditingController();
 
 
+  @override
   void initState(){
     super.initState();
     if (widget.pontoAtual != null){
@@ -28,6 +29,7 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
     }
   }
 
+  @override
   Widget build(BuildContext context){
     return Form(
       key: _formKey,
@@ -36,7 +38,7 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
         children: [
           TextFormField(
             controller: _nomeController,
-            decoration: InputDecoration(labelText: 'Nome',),
+            decoration: const InputDecoration(labelText: 'Nome',),
             validator: (String? valor){
               if (valor == null || valor.isEmpty){
                 return 'Informe O Nome';
@@ -46,7 +48,7 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
           ),
           TextFormField(
             controller: _descricaoController,
-            decoration: InputDecoration(labelText: 'Descrição',),
+            decoration: const InputDecoration(labelText: 'Descrição',),
             validator: (String? valor){
               if (valor == null || valor.isEmpty){
                 return 'Informe a descrição';
@@ -56,7 +58,7 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
           ),
           TextFormField(
             controller: _diferencialController,
-            decoration: InputDecoration(labelText: 'Diferenciais',),
+            decoration: const InputDecoration(labelText: 'Diferenciais',),
             validator: (String? valor){
               if (valor == null || valor.isEmpty){
                 return 'Informe os diferenciais';

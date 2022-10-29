@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/cadastro_form_dialog.dart';
+import 'package:projetopontoturistico/dao/ponto_dao.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
 import 'package:projetopontoturistico/pages/detalhe_page.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'filtro_page.dart';
 
 class ListaPontosPage extends StatefulWidget{
 
+  @override
   _ListaPontosPageState createState() => _ListaPontosPageState();
 }
 
 class _ListaPontosPageState extends State<ListaPontosPage>{
-  var _ultimoId = 0;
+
   static const ACAO_EDITAR = 'editar';
   static const ACAO_EXCLUIR = 'excluir';
-  final _pontos = <Ponto>[
-    Ponto(id: 1, nome: 'jojo', descricao: 'descricao',diferencial: 'tyftrd', data: DateTime.now()),
-    Ponto(id: 1, nome: 'jojo', descricao: 'descricao',diferencial: 'tyftrd', data: DateTime.now().add(Duration(days: 1))),
-  ];
+  static const ACAO_DETALHES = 'detalhes';
+  final _pontos = <Ponto>[];
+  final _daoPonto = PontoDao();
+  var _carregando = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _atualizarLista();
+  }
+
+
+  @override
   Widget build (BuildContext context){
     return Scaffold(
       appBar: criarAppBar(),
@@ -27,7 +37,7 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
       floatingActionButton: FloatingActionButton(
         onPressed: _abrirForm,
         tooltip: 'Novo ponto turistico',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -45,8 +55,32 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
   }
 
   Widget criarBody(){
+    if (_carregando){
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Align(
+            alignment: AlignmentDirectional.center,
+            child: CircularProgressIndicator(),
+          ),
+          Align(
+            alignment: AlignmentDirectional.center,
+            child: Padding(
+              padding: EdgeInsets.only(top:10),
+              child: Text('Carregando os Pontos Turisticos ',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ),
+          )
+        ],
+      );
+    }
     if(_pontos.isEmpty){
-      return Center(
+      return const Center(
         child: Text(
           'Nenhum Ponto Turistico Adicionado',
           style: TextStyle(
@@ -64,13 +98,7 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
           child:  ListTile(
         title: Text('${ponto.nome}'),
         subtitle: Text('${ponto.descricao}'),
-        onLongPress: () {
-        showCupertinoModalBottomSheet(
-        context: context,
-        builder: (context) => DetalhePage(pontos: _pontos,index: index,),
 
-        );
-        },
         
 
         ),
@@ -78,13 +106,17 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
           onSelected: (String valorSelecionado){
             if (valorSelecionado == ACAO_EDITAR){
               _abrirForm(pontoAtual: ponto,indice: index);
-            }else{
-              _excluir(index);
+            }else if (valorSelecionado == ACAO_EXCLUIR){
+              _excluir(ponto);
+            }else {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => DetalhePage(ponto: ponto),
+              ));
             }
           },
         );
 
-      }, separatorBuilder: (BuildContext context, int index) => Divider() ,
+      }, separatorBuilder: (BuildContext context, int index) => const Divider() ,
     );
   }
 
@@ -92,7 +124,7 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
     final navigator = Navigator.of(context);
     navigator.pushNamed(FiltroPage.ROUTE_NAME).then((alterouValores){
       if (alterouValores == true){
-
+        _atualizarLista();
       }
     }
     );
@@ -115,12 +147,11 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
                   if (key.currentState != null  && key.currentState!.dadosValidos()){
                     setState(() {
                       final novoPonto = key.currentState!.novoPonto;
-                      if(indice == null){
-                        novoPonto.id = ++ _ultimoId;
-                        _pontos.add(novoPonto);
-                      }else{
-                        _pontos[indice] = novoPonto;
-                      }
+                      _daoPonto.salvar(novoPonto).then((success) {
+                        if (success) {
+                          _atualizarLista();
+                        }
+                      });
                     });
                     Navigator.of(context).pop();
                   }
@@ -136,12 +167,24 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
   List<PopupMenuEntry<String>> criarItensMenuPopup(){
     return[
       PopupMenuItem<String>(
+        value: ACAO_DETALHES,
+        child: Row(
+          children: const [
+            Icon(Icons.details, color: Colors.black),
+            Padding(
+              padding: EdgeInsets.only(left: 5),
+              child: Text('Detalhes'),
+            ),
+          ],
+        ),
+      ),
+      PopupMenuItem<String>(
         value: ACAO_EDITAR,
         child: Row(
           children: const [
             Icon(Icons.edit, color: Colors.black),
             Padding(
-              padding: EdgeInsets.only(left: 10),
+              padding: EdgeInsets.only(left: 5),
               child: Text('Editar'),
             ),
           ],
@@ -153,7 +196,7 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
           children: const [
             Icon(Icons.delete, color: Colors.red),
             Padding(
-              padding: EdgeInsets.only(left: 10),
+              padding: EdgeInsets.only(left: 5),
               child: Text('Excluir'),
             ),
           ],
@@ -163,7 +206,7 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
     ];
   }
 
-  void _excluir(int indice){
+  void _excluir(Ponto ponto){
     showDialog(
         context: context,
         builder: (BuildContext context){
@@ -172,23 +215,28 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
               children: const [
                 Icon(Icons.warning, color: Colors.red),
                 Padding(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: EdgeInsets.only(left: 5),
                   child: Text('Atenção'),
                 ),
               ],
             ),
-            content: Text('Esse registro será removido definitivamente'),
+            content: const Text('Esse registro será removido definitivamente'),
             actions: [
               TextButton(
-                child: Text('Cancelar'),
+                child: const Text('Cancelar'),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: (){
                   Navigator.of(context).pop();
-                  setState(() {
-                    _pontos.removeAt(indice);
+                  if (ponto.id == null){
+                    return;
+                  }
+                  _daoPonto.remover(ponto.id!).then((success){
+                    if (success) {
+                      _atualizarLista();
+                    }
                   });
 
                 },
@@ -197,5 +245,32 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
           );
         }
     );
+  }
+
+
+
+
+  void _atualizarLista() async {
+    setState(() {
+      _carregando = true;
+    });
+    await Future.delayed(Duration(seconds: 2));
+    final prefs = await SharedPreferences.getInstance();
+    final campoOrdenacao = prefs.getString(FiltroPage.chaveCampoOrdenacao) ?? Ponto.ID;
+    final usarOrdemDecrescente = prefs.getBool(FiltroPage.chaveOrdenacaoDrescente) == true;
+    final filtroDescricao = prefs.getString(FiltroPage.chaveFiltroDescricao) ?? '';
+
+    final  pontos = await _daoPonto.listar(
+      filtro: filtroDescricao,
+      campoOrdenacao: campoOrdenacao,
+      usarOrdemDecrescente: usarOrdemDecrescente,
+    );
+    setState(() {
+      _carregando = false;
+      _pontos.clear();
+      if (pontos.isNotEmpty) {
+        _pontos.addAll(pontos);
+      }
+    });
   }
 }
