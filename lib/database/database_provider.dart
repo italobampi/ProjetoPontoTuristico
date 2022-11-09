@@ -1,12 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
-import '../model/Ponto.dart';
+import '../model/ponto.dart';
 
 
 class DatabaseProvider {
   static const _dbName = 'cadastro_Pontos.db';
-  static const _dbVersion = 2;
+  static const _dbVersion = 1;
 
   DatabaseProvider._init();
   static final DatabaseProvider instance = DatabaseProvider._init();
@@ -32,7 +32,7 @@ class DatabaseProvider {
         ${Ponto.ID} INTEGER PRIMARY KEY AUTOINCREMENT,
         ${Ponto.NOME} TEXT NOT NULL,
         ${Ponto.DESCRICAO} TEXT NOT NULL,
-        ${Ponto.DIFERENCIAIS} TEXT,
+        ${Ponto.DIFERENCIAl} TEXT,
         ${Ponto.DATA} TEXT,
         ${Ponto.LONGITUDE} NUMERIC,
         ${Ponto.LATITUDE} NUMERIC,

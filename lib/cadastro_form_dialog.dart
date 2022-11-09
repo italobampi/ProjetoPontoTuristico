@@ -81,7 +81,11 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
     descricao: _descricaoController.text,
     data: DateTime.now(),
     nome: _nomeController.text,
-    diferencial: _diferencialController.text
+    diferencial: _diferencialController.text,
+    latitude: 0,
+    longitude: 0,
+    imagen: null
+
   );
 
 }

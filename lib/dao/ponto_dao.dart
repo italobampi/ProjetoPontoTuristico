@@ -7,8 +7,8 @@ class PontoDao {
   Future<bool> salvar(Ponto ponto) async {
     final database = await databaseProvider.database;
     final valores = ponto.toMap();
-    if (ponto.id == null) {
-      ponto.id = await database.insert(Ponto.nomeTabela, valores);
+    if (ponto.id == null || ponto.id ==0) {
+      ponto.id = await database.insert(Ponto.nomeTabela, valores );
       return true;
     } else {
       final registrosAtualizados = await database.update(
@@ -50,8 +50,11 @@ class PontoDao {
         Ponto.ID,
         Ponto.NOME,
         Ponto.DESCRICAO,
-        Ponto.DIFERENCIAIS,
+        Ponto.DIFERENCIAl,
         Ponto.DATA,
+        Ponto.LATITUDE,
+        Ponto.LONGITUDE,
+        Ponto.IMAGEN,
       ],
       where: where,
       orderBy: orderBy,
