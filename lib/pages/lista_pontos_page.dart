@@ -151,6 +151,7 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
                     setState(() {
                       final novoPonto = key.currentState!.novoPonto;
                       novoPonto.latitude= _localizacaoAtual?.latitude;
+                      novoPonto.longitude= _localizacaoAtual?.longitude;
                       _daoPonto.salvar(novoPonto).then((success) {
                         if (success) {
                           _atualizarLista();
