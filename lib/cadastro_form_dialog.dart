@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
-
+import 'package:geolocator/geolocator.dart';
 class CadastroFormDialog extends StatefulWidget{
   final Ponto? pontoAtual;
 
@@ -16,6 +16,8 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
   final _nomeController = TextEditingController();
   final _descricaoController = TextEditingController();
   final _diferencialController = TextEditingController();
+
+  Position? _localizacaoAtual;
 
 
   @override
@@ -82,10 +84,12 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
     data: DateTime.now(),
     nome: _nomeController.text,
     diferencial: _diferencialController.text,
-    latitude: 0,
+    latitude:  0,
     longitude: 0,
     imagen: null
 
   );
+
+
 
 }

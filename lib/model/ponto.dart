@@ -50,7 +50,7 @@ factory Ponto.fromMap(Map<String, dynamic> map)=> Ponto(
     descricao: map[DESCRICAO] is String ? map[DESCRICAO] : '',
     latitude: map[LATITUDE] is double ? map[LATITUDE] : 0.0 ,
    longitude:  map[LONGITUDE] is double ? map[LONGITUDE] : 0.0 ,
-    data: map[Ponto.DATA],
+    data: map[Ponto.DATA] is String ? DateFormat("yyyy-MM-dd").parse(map[DATA]): DateTime.now(),
     diferencial: map[DIFERENCIAl] is String ? map[DIFERENCIAl] : '',
   imagen: map[IMAGEN] is String ? map[IMAGEN] : 'https://static6.depositphotos.com/1000244/600/i/950/depositphotos_6009429-stock-photo-sunbeam.jpg',
 );

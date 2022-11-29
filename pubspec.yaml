@@ -49,6 +49,10 @@ dev_dependencies:
   intl: ^0.17.0
   shared_preferences: ^2.0.15
   sqflite: ^2.0.3
+  cupertino_icons: ^1.0.2
+  geolocator: ^9.0.2
+  maps_launcher: ^2.0.1
+  google_maps_flutter: ^2.2.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

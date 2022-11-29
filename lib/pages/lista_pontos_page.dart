@@ -4,7 +4,7 @@ import 'package:projetopontoturistico/dao/ponto_dao.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
 import 'package:projetopontoturistico/pages/detalhe_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:geolocator/geolocator.dart';
 import 'filtro_page.dart';
 
 class ListaPontosPage extends StatefulWidget{
@@ -21,11 +21,13 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
   final _pontos = <Ponto>[];
   final _daoPonto = PontoDao();
   var _carregando = false;
+  Position? _localizacaoAtual;
 
   @override
   void initState() {
     super.initState();
     _atualizarLista();
+
   }
 
 
@@ -145,8 +147,10 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
                 child: const Text('Salvar'),
                 onPressed: (){
                   if (key.currentState != null  && key.currentState!.dadosValidos()){
+                    _obterLocalizacaoAtual();
                     setState(() {
                       final novoPonto = key.currentState!.novoPonto;
+                      novoPonto.latitude= _localizacaoAtual?.latitude;
                       _daoPonto.salvar(novoPonto).then((success) {
                         if (success) {
                           _atualizarLista();
@@ -273,4 +277,73 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
       }
     });
   }
+
+
+
+  void _obterLocalizacaoAtual() async {
+    bool servicoHabilitado = await _servicoHabilitado();
+    if (!servicoHabilitado) {
+      return;
+    }
+    bool permissoesPermitidas = await _permissoesPermitidas();
+    if (!permissoesPermitidas) {
+      return;
+    }
+    _localizacaoAtual = await Geolocator.getCurrentPosition();
+    setState(() {
+
+    });
+  }
+  Future<bool> _servicoHabilitado() async {
+    bool servicoHabilitado = await Geolocator.isLocationServiceEnabled();
+    if (!servicoHabilitado) {
+      await _mostrarDialogMensagem('Para utilizar esse recurso, você deverá '
+          'habilitar o serviço de localização do dispositivo');
+      Geolocator.openLocationSettings();
+      return false;
+    }
+    return true;
+  }
+  Future<bool> _permissoesPermitidas() async {
+    LocationPermission permissao = await Geolocator.checkPermission();
+    if (permissao == LocationPermission.denied) {
+      permissao = await Geolocator.requestPermission();
+      if (permissao == LocationPermission.denied) {
+        _mostrarMensagem(
+            'Não será possível utilizar o recurso por falta de permissão');
+        return false;
+      }
+    }
+    if (permissao == LocationPermission.deniedForever) {
+      await _mostrarDialogMensagem(
+          'Para utilizar esse recurso, você deverá acessar as configurações '
+              'do app e permitir a utilização do serviço de localização');
+      Geolocator.openAppSettings();
+      return false;
+    }
+    return true;
+  }
+  void _mostrarMensagem(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(mensagem),
+    ));
+  }
+
+  Future<void> _mostrarDialogMensagem(String mensagem) async {
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Atenção'),
+        content: Text(mensagem),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+  }
+
+
 }

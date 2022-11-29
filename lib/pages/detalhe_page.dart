@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 
 class DetalhePage extends StatefulWidget {
   static const ROUTE_NAME = '/teste';
@@ -155,6 +156,37 @@ class _DetalhePageState extends State<DetalhePage> {
                         child: Text(pontoAtual?.descricao ?? ''),
                       ),
                       const SizedBox(height: spacing * 3),
+                      Padding(
+                          padding: sidePadding,
+                          child: Row(
+                            children: [
+                              const IconTheme(
+                                data: IconThemeData(color: Colors.grey),
+                                child: Icon(Icons.map),
+                              ),
+                              const SizedBox(
+                                width: spacing,
+                              ),
+                              Text(' Latitude: ${pontoAtual.latitude}'),
+                            ],
+                          )),
+                      Padding(
+                          padding: sidePadding,
+                          child: Row(
+                            children: [
+                              const IconTheme(
+                                data: IconThemeData(color: Colors.grey),
+                                child: ElevatedButton(
+                                  child: const Text('Obter localização Atual'),
+                                  onPressed: _abrirNoMapaExterno,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: spacing,
+                              ),
+                              Text(' Latitude: ${pontoAtual.longitude}'),
+                            ],
+                          )),
                     ],
                   ),
                 )
@@ -162,5 +194,11 @@ class _DetalhePageState extends State<DetalhePage> {
             )),
       ),
     );
+  }
+  void _abrirNoMapaExterno (){
+    if(widget.ponto.latitude == null || widget.ponto.longitude == null){
+      return;
+    }
+    MapsLauncher.launchCoordinates(widget.ponto!.latitude, widget.ponto!.longitude,'ponto');
   }
 }
