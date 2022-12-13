@@ -147,11 +147,8 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
                 child: const Text('Salvar'),
                 onPressed: (){
                   if (key.currentState != null  && key.currentState!.dadosValidos()){
-                    _obterLocalizacaoAtual();
                     setState(() {
                       final novoPonto = key.currentState!.novoPonto;
-                      novoPonto.latitude= _localizacaoAtual?.latitude;
-                      novoPonto.longitude= _localizacaoAtual?.longitude;
                       _daoPonto.salvar(novoPonto).then((success) {
                         if (success) {
                           _atualizarLista();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/pages/filtro_page.dart';
 import 'package:projetopontoturistico/pages/lista_pontos_page.dart';
 import 'package:projetopontoturistico/pages/detalhe_page.dart';
+import 'package:projetopontoturistico/pages/mapa_home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Cadastro de Tarefas',
+      title: 'Ponto turistico',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

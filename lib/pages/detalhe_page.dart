@@ -21,7 +21,7 @@ const sidePadding = EdgeInsets.symmetric(horizontal: padding);
 
 class _DetalhePageState extends State<DetalhePage> {
   final _formKey = GlobalKey<FormState>();
-   Position? _localizacao;
+  Position? _localizacao;
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _DetalhePageState extends State<DetalhePage> {
                               padding: sidePadding,
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   InkWell(
                                     onTap: () {
@@ -78,11 +78,11 @@ class _DetalhePageState extends State<DetalhePage> {
                                         decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(15.0)),
+                                            const BorderRadius.all(
+                                                Radius.circular(15.0)),
                                             border: Border.all(
                                                 color: const Color.fromRGBO(
-                                                        141, 141, 141, 1.0)
+                                                    141, 141, 141, 1.0)
                                                     .withAlpha(40),
                                                 width: 2)),
                                         padding: const EdgeInsets.all(8.0),
@@ -187,7 +187,7 @@ class _DetalhePageState extends State<DetalhePage> {
                                 width: spacing,
                               ),
 
-                               IconTheme(
+                              IconTheme(
                                 data: IconThemeData(color: Colors.grey),
                                 child: ElevatedButton(
                                   child:  Icon(Icons.map) ,
