@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:geolocator/geolocator.dart';
 
 class DetalhePage extends StatefulWidget {
   static const ROUTE_NAME = '/teste';
@@ -20,6 +21,7 @@ const sidePadding = EdgeInsets.symmetric(horizontal: padding);
 
 class _DetalhePageState extends State<DetalhePage> {
   final _formKey = GlobalKey<FormState>();
+   Position? _localizacao;
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _DetalhePageState extends State<DetalhePage> {
 
   Widget criarBody() {
     Ponto pontoAtual = widget.ponto;
+
     return Align(
       alignment: Alignment.center,
       child: SafeArea(
@@ -168,25 +171,37 @@ class _DetalhePageState extends State<DetalhePage> {
                                 width: spacing,
                               ),
                               Text(' Latitude: ${pontoAtual.latitude}'),
+                              const SizedBox(
+                                width: spacing,
+                                height: spacing,
+                              ),
+                              Text(' Logitude: ${pontoAtual.longitude}'),
                             ],
                           )),
                       Padding(
                           padding: sidePadding,
                           child: Row(
                             children: [
-                              const IconTheme(
+                              Text('Maps'),
+                              const SizedBox(
+                                width: spacing,
+                              ),
+
+                               IconTheme(
                                 data: IconThemeData(color: Colors.grey),
                                 child: ElevatedButton(
-                                  child: const Text('Obter localização Atual'),
-                                  onPressed: _abrirNoMapaExterno,
+                                  child:  Icon(Icons.map) ,
+                                  onPressed: _abrirNoMapaEx,
                                 ),
                               ),
                               const SizedBox(
                                 width: spacing,
                               ),
-                              Text(' Latitude: ${pontoAtual.longitude}'),
+
                             ],
-                          )),
+
+                          )
+                      ),
                     ],
                   ),
                 )
@@ -195,10 +210,10 @@ class _DetalhePageState extends State<DetalhePage> {
       ),
     );
   }
-  void _abrirNoMapaExterno (){
+  void  _abrirNoMapaEx(){
     if(widget.ponto.latitude == null || widget.ponto.longitude == null){
       return;
     }
-    MapsLauncher.launchCoordinates(widget.ponto!.latitude, widget.ponto!.longitude,'ponto');
+    MapsLauncher.launchCoordinates(widget.ponto.latitude!.toDouble(), widget.ponto.longitude!.toDouble(),widget.ponto.nome);
   }
 }
