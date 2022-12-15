@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:projetopontoturistico/model/cep.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:projetopontoturistico/service/cep_service.dart';
 
 class DetalhePage extends StatefulWidget {
   static const ROUTE_NAME = '/teste';
@@ -22,10 +24,14 @@ const sidePadding = EdgeInsets.symmetric(horizontal: padding);
 class _DetalhePageState extends State<DetalhePage> {
   final _formKey = GlobalKey<FormState>();
   Position? _localizacao;
+  Cep? _cep ;
+  CepService _service = CepService();
+
 
   @override
   void initState() {
     super.initState();
+    _findCep();
   }
 
   @override
@@ -156,7 +162,14 @@ class _DetalhePageState extends State<DetalhePage> {
                       const SizedBox(height: spacing),
                       Padding(
                         padding: sidePadding,
-                        child: Text(pontoAtual?.descricao ?? ''),
+                        child: Text(  _cep?.estado ?? ''),
+                      ),
+                      const SizedBox(height: spacing),
+                      Padding(
+                        padding: sidePadding,
+                        child: Row(children: [
+                          Text(_cep?.estadoInfo?.nome ?? '')
+                        ],),
                       ),
                       const SizedBox(height: spacing * 3),
                       Padding(
@@ -216,4 +229,19 @@ class _DetalhePageState extends State<DetalhePage> {
     }
     MapsLauncher.launchCoordinates(widget.ponto.latitude!.toDouble(), widget.ponto.longitude!.toDouble(),widget.ponto.nome);
   }
+
+  Future<void> _findCep() async{
+
+
+    try{
+      _cep = await _service.findCepAsObject('89990000');
+    } catch(e){
+      debugPrint(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Ocorreu um erro ao consultar o CEP. Tente novamente'),
+      ));
+    }
+
+  }
+
 }

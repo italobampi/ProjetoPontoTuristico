@@ -55,6 +55,7 @@ class PontoDao {
         Ponto.LATITUDE,
         Ponto.LONGITUDE,
         Ponto.IMAGEN,
+        Ponto.CEP
       ],
       where: where,
       orderBy: orderBy,

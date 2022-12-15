@@ -11,6 +11,7 @@ class Ponto {
   static const LONGITUDE = 'longitude';
   static const LATITUDE = 'latitude';
   static const IMAGEN = 'imagen';
+  static const CEP = 'cep';
 
   int? id;
   String nome;
@@ -20,10 +21,12 @@ class Ponto {
   double? longitude;
   double? latitude;
   String? imagen;
+  String? cep;
+
 
 
   Ponto({required this.id, required this.nome, required this.descricao,
-    required this.data,required this.diferencial , required this.latitude, required this.longitude, required this.imagen});
+    required this.data,required this.diferencial , required this.latitude, required this.longitude, required this.imagen, this.cep});
 
   String get dataFormatada{
     if(data == null){

@@ -36,7 +36,8 @@ class DatabaseProvider {
         ${Ponto.DATA} TEXT,
         ${Ponto.LONGITUDE} NUMERIC,
         ${Ponto.LATITUDE} NUMERIC,
-        ${Ponto.IMAGEN} TEXT        
+        ${Ponto.IMAGEN} TEXT,
+        ${Ponto.CEP} TEXT
       )
     ''');
   }
@@ -45,7 +46,8 @@ class DatabaseProvider {
     switch (oldVersion) {
       case 1:
         await db.execute('''
-          
+          ALTER TABLE ${Ponto.nomeTabela}
+          ADD ${Ponto.CEP} TEXT
         ''');
 
     }
