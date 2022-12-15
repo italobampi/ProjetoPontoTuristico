@@ -4,6 +4,7 @@ import 'package:projetopontoturistico/model/ponto.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:projetopontoturistico/service/cep_service.dart';
+import 'package:projetopontoturistico/utils/util_geo.dart';
 
 class DetalhePage extends StatefulWidget {
   static const ROUTE_NAME = '/teste';
@@ -26,6 +27,8 @@ class _DetalhePageState extends State<DetalhePage> {
   Position? _localizacao;
   Cep? _cep ;
   CepService _service = CepService();
+  double distancia = 1;
+  late Ponto pontoAtual;
 
 
   @override
@@ -36,14 +39,14 @@ class _DetalhePageState extends State<DetalhePage> {
 
   @override
   Widget build(BuildContext context) {
-    Ponto pontoAtual;
     return Scaffold(
       body: criarBody(),
     );
   }
 
   Widget criarBody() {
-    Ponto pontoAtual = widget.ponto;
+     pontoAtual = widget.ponto;
+     _findCep();
 
     return Align(
       alignment: Alignment.center,
@@ -61,7 +64,7 @@ class _DetalhePageState extends State<DetalhePage> {
                       Stack(
                         children: [
                           Image.network(
-                              'https://static6.depositphotos.com/1000244/600/i/950/depositphotos_6009429-stock-photo-sunbeam.jpg',
+                              pontoAtual.imagen,
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.height / 4,
                               fit: BoxFit.fill),
@@ -111,6 +114,7 @@ class _DetalhePageState extends State<DetalhePage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                const SizedBox(height: spacing),
                                 SizedBox(
                                     width: 300,
                                     child: Text(
@@ -136,12 +140,26 @@ class _DetalhePageState extends State<DetalhePage> {
                             children: [
                               const IconTheme(
                                 data: IconThemeData(color: Colors.grey),
-                                child: Icon(Icons.location_on_outlined),
+                                child: Icon(Icons.description),
                               ),
                               const SizedBox(
                                 width: spacing,
                               ),
                               Text(pontoAtual?.descricao ?? ''),
+                            ],
+                          )), const SizedBox(height: spacing),
+                      Padding(
+                          padding: sidePadding,
+                          child: Row(
+                            children: [
+                              const IconTheme(
+                                data: IconThemeData(color: Colors.grey),
+                                child: Icon(Icons.difference),
+                              ),
+                              const SizedBox(
+                                width: spacing,
+                              ),
+                              Text(pontoAtual?.diferencial ?? ''),
                             ],
                           )),
                       const SizedBox(height: spacing),
@@ -162,44 +180,67 @@ class _DetalhePageState extends State<DetalhePage> {
                       const SizedBox(height: spacing),
                       Padding(
                         padding: sidePadding,
-                        child: Text(  _cep?.estado ?? ''),
+                        child: Row(
+                          children: [
+                            IconTheme(data: IconThemeData(color: Colors.grey),
+                                child: Icon(Icons.maps_home_work_outlined)),
+                            const SizedBox(
+                              width: spacing,
+                            ),
+                            Column(
+                              children: [
+                                Text(_cep?.estadoInfo?.nome ?? ''),
+                                Text(_cep?.cidade ?? ''),
+                                Text(_cep?.bairro ?? ''),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                       const SizedBox(height: spacing),
-                      Padding(
-                        padding: sidePadding,
-                        child: Row(children: [
-                          Text(_cep?.estadoInfo?.nome ?? '')
-                        ],),
-                      ),
-                      const SizedBox(height: spacing * 3),
+
+
                       Padding(
                           padding: sidePadding,
                           child: Row(
                             children: [
                               const IconTheme(
                                 data: IconThemeData(color: Colors.grey),
-                                child: Icon(Icons.map),
+                                child: Icon(Icons.location_on_outlined),
                               ),
                               const SizedBox(
                                 width: spacing,
                               ),
-                              Text(' Latitude: ${pontoAtual.latitude}'),
-                              const SizedBox(
-                                width: spacing,
-                                height: spacing,
-                              ),
-                              Text(' Logitude: ${pontoAtual.longitude}'),
+                              Text(' Latitude: ${pontoAtual?.latitude}'),
+
                             ],
                           )),
+
+                      Padding(
+                          padding: sidePadding,
+                        child: Row(
+                          children: [
+                            const SizedBox(height: spacing, width: spacing*2.3,),
+                            Text(' Logitude: ${pontoAtual?.longitude}'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: spacing),
                       Padding(
                           padding: sidePadding,
                           child: Row(
                             children: [
-                              Text('Maps'),
+                              const IconTheme(
+                                data: IconThemeData(color: Colors.grey),
+                                child: Icon(Icons.map_outlined),
+                              ),
                               const SizedBox(
                                 width: spacing,
                               ),
-
+                              Text('Maps'),
+                              const SizedBox(
+                                width: spacing*3,
+                              ),
                               IconTheme(
                                 data: IconThemeData(color: Colors.grey),
                                 child: ElevatedButton(
@@ -207,12 +248,30 @@ class _DetalhePageState extends State<DetalhePage> {
                                   onPressed: _abrirNoMapaEx,
                                 ),
                               ),
-                              const SizedBox(
-                                width: spacing,
-                              ),
-
                             ],
+                          )
+                      ),
+                      Padding(
+                          padding: sidePadding,
+                          child: Row(
+                            children: [
 
+                              IconTheme(
+                                data: IconThemeData(color: Colors.grey),
+                                child: Icon(Icons.align_vertical_center)
+                              ),
+                              const SizedBox(
+                                width: spacing*2,
+                              ),
+                              ElevatedButton(
+                                child:  Text('Distacia') ,
+                                onPressed: _distancia,
+                              ),
+                              const SizedBox(
+                                width: spacing*2,
+                              ),
+                              Text('Distacia  ${distancia} metros'),
+                            ],
                           )
                       ),
                     ],
@@ -231,17 +290,28 @@ class _DetalhePageState extends State<DetalhePage> {
   }
 
   Future<void> _findCep() async{
-
-
     try{
-      _cep = await _service.findCepAsObject('89990000');
+      var _rcep = await _service.findCepAsObject('89990000');
+      setState(() {
+        _cep = _rcep;
+      });
     } catch(e){
       debugPrint(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Ocorreu um erro ao consultar o CEP. Tente novamente'),
       ));
     }
+  }
+  Future<void> _distancia()async {
+   if(pontoAtual.longitude !=null && pontoAtual.latitude !=null ){
+     double resul = await utilDistancia(pontoAtual.latitude!,pontoAtual.longitude!) as double;
+     setState(() {
+       distancia = resul;
+     });
+   }
 
   }
+
+
 
 }

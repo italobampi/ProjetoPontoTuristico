@@ -6,7 +6,7 @@ import '../model/ponto.dart';
 
 class DatabaseProvider {
   static const _dbName = 'cadastro_Pontos.db';
-  static const _dbVersion = 1;
+  static const _dbVersion = 3;
 
   DatabaseProvider._init();
   static final DatabaseProvider instance = DatabaseProvider._init();
@@ -44,7 +44,7 @@ class DatabaseProvider {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     switch (oldVersion) {
-      case 1:
+      case 3:
         await db.execute('''
           ALTER TABLE ${Ponto.nomeTabela}
           ADD ${Ponto.CEP} TEXT

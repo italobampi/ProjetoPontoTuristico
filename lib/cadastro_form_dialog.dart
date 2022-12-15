@@ -28,8 +28,6 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
       _descricaoController.text = widget.pontoAtual!.descricao;
       _nomeController.text= widget.pontoAtual!.nome;
       _diferencialController.text=widget.pontoAtual!.diferencial;
-
-
     }
   }
 
@@ -88,7 +86,8 @@ class CadastroFormDialogState extends State<CadastroFormDialog>{
     diferencial: _diferencialController.text,
       imagen: '',
       longitude: _localizacaoAtual?.longitude ,
-      latitude: _localizacaoAtual?.latitude
+      latitude: _localizacaoAtual?.latitude,
+      cep: ''
   );
 
 

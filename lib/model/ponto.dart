@@ -20,13 +20,13 @@ class Ponto {
   DateTime data;
   double? longitude;
   double? latitude;
-  String? imagen;
-  String? cep;
+  String imagen;
+  String cep;
 
 
 
   Ponto({required this.id, required this.nome, required this.descricao,
-    required this.data,required this.diferencial , required this.latitude, required this.longitude, required this.imagen, this.cep});
+    required this.data,required this.diferencial , required this.latitude, required this.longitude, required this.imagen, required this.cep});
 
   String get dataFormatada{
     if(data == null){
@@ -45,6 +45,7 @@ class Ponto {
     LATITUDE: latitude,
     IMAGEN: imagen == null ?
     'https://static6.depositphotos.com/1000244/600/i/950/depositphotos_6009429-stock-photo-sunbeam.jpg' : imagen ,
+    CEP: cep,
   };
 
   factory Ponto.fromMap(Map<String, dynamic> map)=> Ponto(
@@ -56,6 +57,7 @@ class Ponto {
     data: map[Ponto.DATA] is String ? DateFormat("yyyy-MM-dd").parse(map[DATA]): DateTime.now(),
     diferencial: map[DIFERENCIAl] is String ? map[DIFERENCIAl] : '',
     imagen: map[IMAGEN] is String ? map[IMAGEN] : 'https://static6.depositphotos.com/1000244/600/i/950/depositphotos_6009429-stock-photo-sunbeam.jpg',
+    cep: map[CEP] is String ? map[CEP] : '',
   );
 
 }

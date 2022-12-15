@@ -18,7 +18,7 @@ class _FiltroPageState extends State<FiltroPage>{
     Ponto.ID: 'Código',
     Ponto.NOME: 'Nome',
     Ponto.DESCRICAO: 'Descrição',
-    Ponto.DATA: 'Prazo'
+    Ponto.DATA: 'Data de inclusão'
   };
   late final SharedPreferences _prefs;
   final _descricaoController = TextEditingController();

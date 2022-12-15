@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:projetopontoturistico/cadastro_form_dialog.dart';
 import 'package:projetopontoturistico/dao/ponto_dao.dart';
 import 'package:projetopontoturistico/model/ponto.dart';
+import 'package:projetopontoturistico/pages/cadastro_page.dart';
 import 'package:projetopontoturistico/pages/detalhe_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:geolocator/geolocator.dart';
 import 'filtro_page.dart';
 
 class ListaPontosPage extends StatefulWidget{
@@ -21,7 +21,6 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
   final _pontos = <Ponto>[];
   final _daoPonto = PontoDao();
   var _carregando = false;
-  Position? _localizacaoAtual;
 
   @override
   void initState() {
@@ -37,7 +36,7 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
       appBar: criarAppBar(),
       body: criarBody(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _abrirForm,
+        onPressed: _abrirPaginaCadastro,
         tooltip: 'Novo ponto turistico',
         child: const Icon(Icons.add),
       ),
@@ -101,13 +100,15 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
         title: Text('${ponto.nome}'),
         subtitle: Text('${ponto.descricao}'),
 
+
         
 
         ),
           itemBuilder: (BuildContext context) => criarItensMenuPopup(),
           onSelected: (String valorSelecionado){
             if (valorSelecionado == ACAO_EDITAR){
-              _abrirForm(pontoAtual: ponto,indice: index);
+             // _abrirForm(pontoAtual: ponto,indice: index);
+              _abrirPaginaUpdate(pontoAtual: ponto);
             }else if (valorSelecionado == ACAO_EXCLUIR){
               _excluir(ponto);
             }else {
@@ -131,7 +132,25 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
     }
     );
   }
-  void _abrirForm( {Ponto? pontoAtual, int? indice} ){
+  void _abrirPaginaCadastro({Ponto? pontoAtual}){
+    // Navigator.of(context).push(MaterialPageRoute(
+    //   builder: (_) => CadastroPage(key: key, pontoAtual: pontoAtual ),
+    // ));
+    final navigator = Navigator.of(context);
+    navigator.pushNamed(CadastroPage.ROUTE_NAME).whenComplete(() => _atualizarLista());
+    _atualizarLista();
+    
+  }
+  void _abrirPaginaUpdate({Ponto? pontoAtual}){
+    final key = GlobalKey<CadastroFormDialogState>();
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => CadastroPage(key: key, pontoAtual: pontoAtual ),
+    ));
+
+
+  }
+
+  void _abrirForm( {Ponto? pontoAtual} ){
     final key = GlobalKey<CadastroFormDialogState>();
     showDialog(
         context: context,
@@ -274,73 +293,6 @@ class _ListaPontosPageState extends State<ListaPontosPage>{
         _pontos.addAll(pontos);
       }
     });
-  }
-
-
-
-  void _obterLocalizacaoAtual() async {
-    bool servicoHabilitado = await _servicoHabilitado();
-    if (!servicoHabilitado) {
-      return;
-    }
-    bool permissoesPermitidas = await _permissoesPermitidas();
-    if (!permissoesPermitidas) {
-      return;
-    }
-    _localizacaoAtual = await Geolocator.getCurrentPosition();
-    setState(() {
-
-    });
-  }
-  Future<bool> _servicoHabilitado() async {
-    bool servicoHabilitado = await Geolocator.isLocationServiceEnabled();
-    if (!servicoHabilitado) {
-      await _mostrarDialogMensagem('Para utilizar esse recurso, você deverá '
-          'habilitar o serviço de localização do dispositivo');
-      Geolocator.openLocationSettings();
-      return false;
-    }
-    return true;
-  }
-  Future<bool> _permissoesPermitidas() async {
-    LocationPermission permissao = await Geolocator.checkPermission();
-    if (permissao == LocationPermission.denied) {
-      permissao = await Geolocator.requestPermission();
-      if (permissao == LocationPermission.denied) {
-        _mostrarMensagem(
-            'Não será possível utilizar o recurso por falta de permissão');
-        return false;
-      }
-    }
-    if (permissao == LocationPermission.deniedForever) {
-      await _mostrarDialogMensagem(
-          'Para utilizar esse recurso, você deverá acessar as configurações '
-              'do app e permitir a utilização do serviço de localização');
-      Geolocator.openAppSettings();
-      return false;
-    }
-    return true;
-  }
-  void _mostrarMensagem(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(mensagem),
-    ));
-  }
-
-  Future<void> _mostrarDialogMensagem(String mensagem) async {
-    await showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Atenção'),
-        content: Text(mensagem),
-        actions: [
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
-    );
   }
 
 
